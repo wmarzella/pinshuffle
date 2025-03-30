@@ -27,13 +27,23 @@ The new slideshow feature allows you to view your pins as a presentation-style s
 
 1. Load your pins from your selected boards
 2. Click the slideshow button (🎞️) in the control panel
-3. The slideshow starts automatically in play mode
+3. The slideshow starts automatically in play mode with shuffled images
 4. Adjust the speed using the slider in the control panel
 5. Use keyboard shortcuts for convenient navigation:
    - **Arrow Right**: Next slide
    - **Arrow Left**: Previous slide
    - **Space**: Play/Pause
    - **F**: Toggle fullscreen
+   - **S**: Toggle shuffle mode
+   - **R**: Re-shuffle images
    - **Esc**: Exit slideshow
+
+### Testing the Slideshow:
+
+You can test the slideshow without a Pinterest account by using test mode:
+
+```
+http://localhost:8275/?testmode=true
+```
 
 Feel free to contribute.
