@@ -12,6 +12,7 @@ class PinSlideshow {
 			interval: 1000, // Default: 1 second per slide
 			transition: 'fade', // Default transition
 			fullscreen: false, // Start in normal mode
+			shuffle: true, // Shuffle by default
 			...options,
 		};
 
@@ -111,6 +112,16 @@ class PinSlideshow {
 		this.speedValue = document.createElement('span');
 		this.speedValue.textContent = `1000ms`;
 		this.speedControl.appendChild(this.speedValue);
+
+		// Shuffle button
+		this.shuffleButton = document.createElement('button');
+		this.shuffleButton.innerHTML = this.options.shuffle ? '🔀' : '↔️';
+		this.shuffleButton.title = this.options.shuffle
+			? 'Shuffle is ON'
+			: 'Shuffle is OFF';
+		this.shuffleButton.classList.add('pin-slideshow-btn', 'shuffle-btn');
+		this.shuffleButton.addEventListener('click', () => this.toggleShuffle());
+		this.controlPanel.appendChild(this.shuffleButton);
 
 		// Fullscreen button
 		this.fullscreenButton = document.createElement('button');
@@ -238,9 +249,43 @@ class PinSlideshow {
 		this.showSlide(this.currentIndex);
 	}
 
+	toggleShuffle() {
+		this.options.shuffle = !this.options.shuffle;
+		this.shuffleButton.innerHTML = this.options.shuffle ? '🔀' : '↔️';
+		this.shuffleButton.title = this.options.shuffle
+			? 'Shuffle is ON'
+			: 'Shuffle is OFF';
+
+		// If shuffle was turned on, shuffle the images
+		if (this.options.shuffle) {
+			// Store current image to keep it visible after shuffle
+			const currentPin = this.pins[this.currentIndex];
+
+			// Shuffle
+			this.shuffleImages();
+
+			// Find the current image in the new order
+			this.currentIndex = this.pins.findIndex(
+				(pin) => pin.id === currentPin.id
+			);
+			if (this.currentIndex === -1) this.currentIndex = 0;
+
+			// If playing, restart to use new order
+			if (this.isPlaying) {
+				this.pause();
+				this.play();
+			}
+		}
+	}
+
 	open() {
 		// Show the slideshow
 		this.container.style.display = 'flex';
+
+		// Shuffle the images if the option is enabled
+		if (this.options.shuffle) {
+			this.shuffleImages();
+		}
 
 		// Load the first slide
 		this.showSlide(0);
@@ -279,10 +324,29 @@ class PinSlideshow {
 			case 'f':
 				this.toggleFullscreen();
 				break;
+			case 's':
+				this.toggleShuffle();
+				break;
+			case 'r':
+				if (this.options.shuffle) {
+					this.shuffleImages();
+					this.showSlide(0);
+				}
+				break;
 			case 'Escape':
 				this.close();
 				break;
 		}
+	}
+
+	// Randomize the pins array
+	shuffleImages() {
+		// Fisher-Yates shuffle algorithm
+		for (let i = this.pins.length - 1; i > 0; i--) {
+			const j = Math.floor(Math.random() * (i + 1));
+			[this.pins[i], this.pins[j]] = [this.pins[j], this.pins[i]];
+		}
+		console.log('Images shuffled');
 	}
 }
 

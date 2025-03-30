@@ -183,3 +183,14 @@
 .fullscreen-btn {
 	position: static; /* Ensure it stays in the control panel flow */
 }
+
+.shuffle-btn {
+	position: relative;
+	font-size: 1.2rem;
+	background-color: rgba(0, 0, 0, 0.3);
+	transition: background-color 0.2s, transform 0.3s;
+}
+
+.shuffle-btn:hover {
+	transform: rotate(180deg);
+}
