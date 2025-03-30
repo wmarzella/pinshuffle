@@ -65,7 +65,7 @@ func main() {
 	// Load static files like CSS, Images & JavaScript.
 	app.Static("/static", "./static")
 
-	app.Get("/", indexHandler)
+	app.Get("/", HandleIndex)
 	app.Get("/redirect", authRedirectHandler)
 	app.Get("/task/*", taskHandler)
 	app.Get("/privacy", privacyHandler)
