@@ -34,6 +34,9 @@
 	max-height: 80vh;
 	display: block;
 	margin: 0 auto;
+	/* Add noise reduction filter */
+	filter: brightness(1.02) contrast(0.95) blur(0.3px);
+	image-rendering: auto;
 }
 
 .pin-slide-caption {
@@ -135,11 +138,13 @@
 		width: 350px;
 		height: 350px;
 		object-fit: cover;
+		filter: brightness(1.02) contrast(0.95) blur(0.3px);
 	}
 
 	.pin-slideshow.consistent-size.fullscreen .pin-slide-image {
 		width: 450px;
 		height: 450px;
+		filter: brightness(1.02) contrast(0.95) blur(0.3px);
 	}
 }
 
@@ -149,11 +154,13 @@
 		width: 280px;
 		height: 280px;
 		object-fit: cover;
+		filter: brightness(1.02) contrast(0.95) blur(0.3px);
 	}
 
 	.pin-slideshow.consistent-size.fullscreen .pin-slide-image {
 		width: 320px;
 		height: 320px;
+		filter: brightness(1.02) contrast(0.95) blur(0.3px);
 	}
 }
 
@@ -173,12 +180,16 @@
 	object-fit: cover; /* Fill the container entirely, may crop image */
 	object-position: center; /* Centers the image in the container */
 	background-color: rgba(0, 0, 0, 0.3); /* Subtle background for empty space */
+	/* Add noise reduction filter */
+	filter: brightness(1.02) contrast(0.95) blur(0.3px);
+	image-rendering: auto;
 }
 
 /* Fullscreen consistent size */
 .pin-slideshow.consistent-size.fullscreen .pin-slide-image {
 	width: 800px;
 	height: 800px;
+	filter: brightness(1.02) contrast(0.95) blur(0.3px);
 }
 
 /* Make the fullscreen button stay in the control panel at the bottom */
