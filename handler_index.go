@@ -11,7 +11,12 @@ func HandleIndex(c *fiber.Ctx) error {
 		return HandleTestMode(c)
 	}
 	
-	return TemplateHandler(c)
+	// Use the existing app strategy for normal operation
+	model, err := app.Func(c)
+	if err != nil {
+		return err
+	}
+	return c.Render("layout", model)
 }
 
 // HandleTestMode renders the template with mock data for testing
@@ -77,12 +82,5 @@ func HandleTestMode(c *fiber.Ctx) error {
 			Max:             100,
 			ImageResolution: 2,
 		},
-	})
-}
-
-func indexHandler(c *fiber.Ctx) error {
-	return c.Render("index", fiber.Map{
-		"Title":   "Hello, World!",
-		"Message": "👋 Hello, World!",
 	})
 }
