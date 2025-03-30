@@ -141,17 +141,26 @@
 }
 
 .pin-slideshow.consistent-size .pin-slide-image {
-	width: auto;
-	height: auto;
-	max-width: 80vh;
-	max-height: 80vh;
+	/* Fixed dimensions box that all images must fit within */
+	width: 80vh;
+	height: 80vh;
 	object-fit: contain;
+	background-color: rgba(
+		0,
+		0,
+		0,
+		0.3
+	); /* Subtle background to show image boundaries */
+	max-width: none; /* Override the previous max-width */
+	max-height: none; /* Override the previous max-height */
 }
 
 /* Fullscreen consistent size */
 .pin-slideshow.consistent-size.fullscreen .pin-slide-image {
-	max-width: 90vh;
-	max-height: 90vh;
+	width: 90vh;
+	height: 90vh;
+	max-width: none;
+	max-height: none;
 }
 
 /* Make the fullscreen button stay in the control panel at the bottom */
