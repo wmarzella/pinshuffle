@@ -1,8 +1,34 @@
 package main
 
 import (
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	
 	"github.com/gofiber/fiber/v2"
 )
+
+// MockData represents the structure of our mock_pins.json file
+type MockData struct {
+	Pins   []MockPin            `json:"pins"`
+	Boards map[string]MockBoard `json:"boards"`
+}
+
+type MockPin struct {
+	Id       string    `json:"id"`
+	Name     string    `json:"name"`
+	AltText  string    `json:"altText"`
+	Color    string    `json:"color"`
+	ImageURL string    `json:"imageURL"`
+	Board    MockBoard `json:"board"`
+}
+
+type MockBoard struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
 
 // HandleIndex handles the homepage
 func HandleIndex(c *fiber.Ctx) error {
@@ -19,64 +45,77 @@ func HandleIndex(c *fiber.Ctx) error {
 	return c.Render("layout", model)
 }
 
+// LoadMockData loads mock data from JSON file
+func LoadMockData() (*MockData, error) {
+	// Get the current working directory
+	cwd, err := os.Getwd()
+	if err != nil {
+		return nil, fmt.Errorf("error getting current directory: %v", err)
+	}
+	
+	// Read the JSON file
+	filePath := filepath.Join(cwd, "mock_pins.json")
+	jsonFile, err := os.Open(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("error opening JSON file: %v", err)
+	}
+	defer jsonFile.Close()
+	
+	// Parse the JSON data
+	byteValue, err := ioutil.ReadAll(jsonFile)
+	if err != nil {
+		return nil, fmt.Errorf("error reading JSON file: %v", err)
+	}
+	
+	var mockData MockData
+	if err := json.Unmarshal(byteValue, &mockData); err != nil {
+		return nil, fmt.Errorf("error parsing JSON data: %v", err)
+	}
+	
+	return &mockData, nil
+}
+
 // HandleTestMode renders the template with mock data for testing
 func HandleTestMode(c *fiber.Ctx) error {
-	// Create mock data for testing the slideshow
-	mockPins := []TemplatePin{
-		{
-			Id:       "1",
-			Name:     "Test Pin 1",
-			AltText:  "Test pin 1 description",
-			Color:    "#ff5555",
-			ImageURL: "https://i.pinimg.com/736x/f1/af/e3/f1afe333f6147ffa1954b12947929f23.jpg",
-			Board:    &TemplateBoard{Id: "board1", Name: "Test Board 1"},
-		},
-		{
-			Id:       "2",
-			Name:     "Test Pin 2",
-			AltText:  "Test pin 2 description",
-			Color:    "#55ff55",
-			ImageURL: "https://i.pinimg.com/736x/86/c4/86/86c486487eba97bfac0b111f7fab06c9.jpg",
-			Board:    &TemplateBoard{Id: "board1", Name: "Test Board 1"},
-		},
-		{
-			Id:       "3",
-			Name:     "Test Pin 3",
-			AltText:  "Test pin 3 description",
-			Color:    "#5555ff",
-			ImageURL: "https://i.pinimg.com/736x/0d/35/51/0d3551f92b96838c54a615e3124e7afc.jpg",
-			Board:    &TemplateBoard{Id: "board2", Name: "Test Board 2"},
-		},
-		{
-			Id:       "4",
-			Name:     "Test Pin 4",
-			AltText:  "Test pin 4 description",
-			Color:    "#ffff55",
-			ImageURL: "https://i.pinimg.com/736x/41/62/99/416299e20ad0de066d00dd4fe592ab18.jpg",
-			Board:    &TemplateBoard{Id: "board2", Name: "Test Board 2"},
-		},
-		{
-			Id:       "5",
-			Name:     "Test Pin 5",
-			AltText:  "Test pin 5 description",
-			Color:    "#ff55ff",
-			ImageURL: "https://i.pinimg.com/736x/4d/90/80/4d90802c98979564de2b6656434d967f.jpg",
-			Board:    &TemplateBoard{Id: "board3", Name: "Test Board 3"},
-		},
+	// Load mock data from JSON file
+	mockData, err := LoadMockData()
+	if err != nil {
+		return c.Status(500).SendString(fmt.Sprintf("Error loading mock data: %v", err))
 	}
-
-	// Create map of boards instead of slice
-	mockBoards := make(map[string]*TemplateBoard)
-	mockBoards["board1"] = &TemplateBoard{Id: "board1", Name: "Test Board 1"}
-	mockBoards["board2"] = &TemplateBoard{Id: "board2", Name: "Test Board 2"}
-	mockBoards["board3"] = &TemplateBoard{Id: "board3", Name: "Test Board 3"}
-
+	
+	// Convert mock pins to template pins
+	templatePins := make([]TemplatePin, 0, len(mockData.Pins))
+	for _, pin := range mockData.Pins {
+		board := &TemplateBoard{
+			Id:   pin.Board.Id,
+			Name: pin.Board.Name,
+		}
+		
+		templatePins = append(templatePins, TemplatePin{
+			Id:       pin.Id,
+			Name:     pin.Name,
+			AltText:  pin.AltText,
+			Color:    pin.Color,
+			ImageURL: pin.ImageURL,
+			Board:    board,
+		})
+	}
+	
+	// Convert mock boards to template boards
+	templateBoards := make(map[string]*TemplateBoard)
+	for id, board := range mockData.Boards {
+		templateBoards[id] = &TemplateBoard{
+			Id:   board.Id,
+			Name: board.Name,
+		}
+	}
+	
 	// Create template data with mock pins
 	return c.Render("layout", fiber.Map{
 		"OAuthURL":      "/",
 		"Authenticated": true, // Pretend we're authenticated
-		"Pins":          mockPins,
-		"Boards":        mockBoards,
+		"Pins":          templatePins,
+		"Boards":        templateBoards,
 		"User": TemplateUser{
 			Name:    "Test User",
 			IconURL: "https://via.placeholder.com/150",
