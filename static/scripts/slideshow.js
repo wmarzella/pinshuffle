@@ -121,12 +121,12 @@ class PinSlideshow {
 		);
 		this.controlPanel.appendChild(this.fullscreenButton);
 
-		// Close button
+		// Close button - moved outside the control panel to avoid overlap
 		this.closeButton = document.createElement('button');
 		this.closeButton.innerHTML = '✕';
 		this.closeButton.classList.add('pin-slideshow-btn', 'close-btn');
 		this.closeButton.addEventListener('click', () => this.close());
-		this.controlPanel.appendChild(this.closeButton);
+		this.container.appendChild(this.closeButton); // Attach directly to container
 	}
 
 	updateSpeed() {

@@ -153,3 +153,8 @@
 	max-width: 90vh;
 	max-height: 90vh;
 }
+
+/* Make the fullscreen button stay in the control panel at the bottom */
+.fullscreen-btn {
+	position: static; /* Ensure it stays in the control panel flow */
+}
