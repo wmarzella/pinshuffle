@@ -65,11 +65,11 @@ func HandleTestMode(c *fiber.Ctx) error {
 		},
 	}
 
-	mockBoards := []*TemplateBoard{
-		{Id: "board1", Name: "Test Board 1"},
-		{Id: "board2", Name: "Test Board 2"},
-		{Id: "board3", Name: "Test Board 3"},
-	}
+	// Create map of boards instead of slice
+	mockBoards := make(map[string]*TemplateBoard)
+	mockBoards["board1"] = &TemplateBoard{Id: "board1", Name: "Test Board 1"}
+	mockBoards["board2"] = &TemplateBoard{Id: "board2", Name: "Test Board 2"}
+	mockBoards["board3"] = &TemplateBoard{Id: "board3", Name: "Test Board 3"}
 
 	// Create template data with mock pins
 	return c.Render("layout", fiber.Map{
