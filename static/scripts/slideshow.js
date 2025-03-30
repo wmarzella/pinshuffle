@@ -32,6 +32,7 @@ class PinSlideshow {
 
 		// Add classes and styles
 		this.container.classList.add('pin-slideshow');
+		this.container.classList.add('consistent-size'); // Add class for consistent sizing
 
 		// Create slideshow elements
 		this.createControls();
