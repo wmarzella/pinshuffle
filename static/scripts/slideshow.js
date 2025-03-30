@@ -1,0 +1,272 @@
+// Slideshow functionality for Pin Shuffle
+class PinSlideshow {
+	constructor(pins, container, options = {}) {
+		this.pins = pins;
+		this.container = container;
+		this.currentIndex = 0;
+		this.isPlaying = false;
+		this.slideInterval = null;
+
+		// Default options
+		this.options = {
+			interval: 3000, // Default: 3 seconds per slide
+			transition: 'fade', // Default transition
+			fullscreen: false, // Start in normal mode
+			...options,
+		};
+
+		// Create slideshow elements
+		this.setupSlideshow();
+
+		// Setup keyboard shortcuts
+		document.addEventListener('keydown', (e) => this.handleKeyPress(e));
+	}
+
+	setupSlideshow() {
+		// Create slideshow container if not provided
+		if (!this.container) {
+			this.container = document.createElement('div');
+			this.container.id = 'pin-slideshow-container';
+			document.body.appendChild(this.container);
+		}
+
+		// Add classes and styles
+		this.container.classList.add('pin-slideshow');
+
+		// Create slideshow elements
+		this.createControls();
+		this.createSlideElement();
+
+		// Hide slideshow initially
+		this.container.style.display = 'none';
+	}
+
+	createSlideElement() {
+		// Create main slide element
+		this.slideElement = document.createElement('div');
+		this.slideElement.classList.add('pin-slide');
+		this.container.appendChild(this.slideElement);
+
+		// Create image element
+		this.imageElement = document.createElement('img');
+		this.imageElement.classList.add('pin-slide-image');
+		this.slideElement.appendChild(this.imageElement);
+
+		// Create caption element
+		this.captionElement = document.createElement('div');
+		this.captionElement.classList.add('pin-slide-caption');
+		this.slideElement.appendChild(this.captionElement);
+	}
+
+	createControls() {
+		// Create control panel
+		this.controlPanel = document.createElement('div');
+		this.controlPanel.classList.add('pin-slideshow-controls');
+		this.container.appendChild(this.controlPanel);
+
+		// Previous button
+		this.prevButton = document.createElement('button');
+		this.prevButton.innerHTML = '⟨';
+		this.prevButton.classList.add('pin-slideshow-btn', 'prev-btn');
+		this.prevButton.addEventListener('click', () => this.prevSlide());
+		this.controlPanel.appendChild(this.prevButton);
+
+		// Play/Pause button
+		this.playPauseButton = document.createElement('button');
+		this.playPauseButton.innerHTML = '▶';
+		this.playPauseButton.classList.add('pin-slideshow-btn', 'play-pause-btn');
+		this.playPauseButton.addEventListener('click', () =>
+			this.togglePlayPause()
+		);
+		this.controlPanel.appendChild(this.playPauseButton);
+
+		// Next button
+		this.nextButton = document.createElement('button');
+		this.nextButton.innerHTML = '⟩';
+		this.nextButton.classList.add('pin-slideshow-btn', 'next-btn');
+		this.nextButton.addEventListener('click', () => this.nextSlide());
+		this.controlPanel.appendChild(this.nextButton);
+
+		// Speed control
+		this.speedControl = document.createElement('div');
+		this.speedControl.classList.add('pin-slideshow-speed');
+		this.controlPanel.appendChild(this.speedControl);
+
+		// Speed label
+		const speedLabel = document.createElement('span');
+		speedLabel.textContent = 'Speed: ';
+		this.speedControl.appendChild(speedLabel);
+
+		// Speed input
+		this.speedInput = document.createElement('input');
+		this.speedInput.type = 'range';
+		this.speedInput.min = '1';
+		this.speedInput.max = '10';
+		this.speedInput.value = '3';
+		this.speedInput.addEventListener('input', () => this.updateSpeed());
+		this.speedControl.appendChild(this.speedInput);
+
+		// Speed value
+		this.speedValue = document.createElement('span');
+		this.speedValue.textContent = `${this.speedInput.value}s`;
+		this.speedControl.appendChild(this.speedValue);
+
+		// Fullscreen button
+		this.fullscreenButton = document.createElement('button');
+		this.fullscreenButton.innerHTML = '⛶';
+		this.fullscreenButton.classList.add('pin-slideshow-btn', 'fullscreen-btn');
+		this.fullscreenButton.addEventListener('click', () =>
+			this.toggleFullscreen()
+		);
+		this.controlPanel.appendChild(this.fullscreenButton);
+
+		// Close button
+		this.closeButton = document.createElement('button');
+		this.closeButton.innerHTML = '✕';
+		this.closeButton.classList.add('pin-slideshow-btn', 'close-btn');
+		this.closeButton.addEventListener('click', () => this.close());
+		this.controlPanel.appendChild(this.closeButton);
+	}
+
+	updateSpeed() {
+		const speed = parseInt(this.speedInput.value);
+		this.options.interval = speed * 1000;
+		this.speedValue.textContent = `${speed}s`;
+
+		// Restart the slideshow with new speed if it's currently playing
+		if (this.isPlaying) {
+			this.pause();
+			this.play();
+		}
+	}
+
+	showSlide(index) {
+		// Ensure index is within bounds
+		if (index < 0) {
+			index = this.pins.length - 1;
+		} else if (index >= this.pins.length) {
+			index = 0;
+		}
+
+		this.currentIndex = index;
+		const pin = this.pins[this.currentIndex];
+
+		// Get the appropriate resolution based on fullscreen mode
+		let imageUrl;
+		if (this.options.fullscreen) {
+			// Use highest resolution available
+			imageUrl = pin.imageURL;
+		} else {
+			imageUrl = pin.imageURL;
+		}
+
+		// Update image with transition
+		this.imageElement.classList.add('transitioning');
+		setTimeout(() => {
+			this.imageElement.src = imageUrl;
+			this.imageElement.classList.remove('transitioning');
+		}, 200);
+
+		// Update caption with board name
+		this.captionElement.textContent = pin.board?.name || '';
+	}
+
+	nextSlide() {
+		this.showSlide(this.currentIndex + 1);
+	}
+
+	prevSlide() {
+		this.showSlide(this.currentIndex - 1);
+	}
+
+	play() {
+		if (!this.isPlaying) {
+			this.isPlaying = true;
+			this.playPauseButton.innerHTML = '⏸';
+			this.slideInterval = setInterval(() => {
+				this.nextSlide();
+			}, this.options.interval);
+		}
+	}
+
+	pause() {
+		if (this.isPlaying) {
+			this.isPlaying = false;
+			this.playPauseButton.innerHTML = '▶';
+			clearInterval(this.slideInterval);
+		}
+	}
+
+	togglePlayPause() {
+		if (this.isPlaying) {
+			this.pause();
+		} else {
+			this.play();
+		}
+	}
+
+	toggleFullscreen() {
+		this.options.fullscreen = !this.options.fullscreen;
+
+		if (this.options.fullscreen) {
+			this.container.classList.add('fullscreen');
+			this.fullscreenButton.innerHTML = '⛶';
+		} else {
+			this.container.classList.remove('fullscreen');
+			this.fullscreenButton.innerHTML = '⛶';
+		}
+
+		// Refresh current slide to load appropriate resolution
+		this.showSlide(this.currentIndex);
+	}
+
+	open() {
+		// Show the slideshow
+		this.container.style.display = 'flex';
+
+		// Load the first slide
+		this.showSlide(0);
+
+		// Start playing automatically
+		this.play();
+	}
+
+	close() {
+		// Stop the slideshow
+		this.pause();
+
+		// Hide the container
+		this.container.style.display = 'none';
+	}
+
+	handleKeyPress(e) {
+		if (this.container.style.display === 'none') {
+			return;
+		}
+
+		switch (e.key) {
+			case 'ArrowRight':
+				this.nextSlide();
+				break;
+			case 'ArrowLeft':
+				this.prevSlide();
+				break;
+			case ' ':
+				this.togglePlayPause();
+				e.preventDefault();
+				break;
+			case 'f':
+				this.toggleFullscreen();
+				break;
+			case 'Escape':
+				this.close();
+				break;
+		}
+	}
+}
+
+// Initialize slideshow when document is ready
+document.addEventListener('DOMContentLoaded', function () {
+	// The slideshow will be initialized when the "Start Slideshow" button is clicked
+	// See the integration in app.js
+});

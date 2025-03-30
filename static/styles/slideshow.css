@@ -1,0 +1,132 @@
+/* Slideshow styles for Pin Shuffle */
+
+.pin-slideshow {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.9);
+	z-index: 9999;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+}
+
+.pin-slide {
+	position: relative;
+	width: 80%;
+	height: 80%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.pin-slide-image {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+	transition: opacity 0.2s ease-in-out;
+}
+
+.pin-slide-image.transitioning {
+	opacity: 0;
+}
+
+.pin-slide-caption {
+	position: absolute;
+	bottom: -40px;
+	left: 0;
+	width: 100%;
+	text-align: center;
+	color: white;
+	font-size: 1.2rem;
+	font-weight: bold;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.pin-slideshow-controls {
+	position: absolute;
+	bottom: 20px;
+	left: 50%;
+	transform: translateX(-50%);
+	display: flex;
+	gap: 10px;
+	background-color: rgba(0, 0, 0, 0.7);
+	padding: 10px 20px;
+	border-radius: 30px;
+	align-items: center;
+}
+
+.pin-slideshow-btn {
+	background-color: transparent;
+	border: none;
+	color: white;
+	font-size: 1.5rem;
+	cursor: pointer;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: background-color 0.2s;
+}
+
+.pin-slideshow-btn:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+}
+
+.pin-slideshow-speed {
+	display: flex;
+	align-items: center;
+	color: white;
+	margin: 0 10px;
+	gap: 5px;
+}
+
+.pin-slideshow-speed input {
+	width: 100px;
+}
+
+.close-btn {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	font-size: 1.5rem;
+	background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* Fullscreen mode */
+.pin-slideshow.fullscreen .pin-slide {
+	width: 100%;
+	height: 100%;
+}
+
+.pin-slideshow.fullscreen .pin-slide-image {
+	max-width: 100vw;
+	max-height: 100vh;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+	.pin-slideshow-controls {
+		flex-wrap: wrap;
+		justify-content: center;
+		width: 90%;
+	}
+
+	.pin-slideshow-speed {
+		width: 100%;
+		justify-content: center;
+		margin-top: 10px;
+	}
+
+	.pin-slide {
+		width: 95%;
+		height: 75%;
+	}
+}
