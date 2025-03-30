@@ -9,7 +9,7 @@ class PinSlideshow {
 
 		// Default options
 		this.options = {
-			interval: 3000, // Default: 3 seconds per slide
+			interval: 1000, // Default: 1 second per slide
 			transition: 'fade', // Default transition
 			fullscreen: false, // Start in normal mode
 			...options,
@@ -100,15 +100,15 @@ class PinSlideshow {
 		// Speed input
 		this.speedInput = document.createElement('input');
 		this.speedInput.type = 'range';
-		this.speedInput.min = '1';
-		this.speedInput.max = '10';
-		this.speedInput.value = '3';
+		this.speedInput.min = '0';
+		this.speedInput.max = '100';
+		this.speedInput.value = '50';
 		this.speedInput.addEventListener('input', () => this.updateSpeed());
 		this.speedControl.appendChild(this.speedInput);
 
 		// Speed value
 		this.speedValue = document.createElement('span');
-		this.speedValue.textContent = `${this.speedInput.value}s`;
+		this.speedValue.textContent = `1000ms`;
 		this.speedControl.appendChild(this.speedValue);
 
 		// Fullscreen button
@@ -129,9 +129,30 @@ class PinSlideshow {
 	}
 
 	updateSpeed() {
-		const speed = parseInt(this.speedInput.value);
-		this.options.interval = speed * 1000;
-		this.speedValue.textContent = `${speed}s`;
+		const sliderValue = parseInt(this.speedInput.value);
+
+		// Exponential scale: 0-100 slider value to 5-5000ms
+		// At slider 0: 5ms (extremely fast)
+		// At slider 50: ~250ms (moderate)
+		// At slider 100: 5000ms (very slow)
+		let newInterval;
+
+		if (sliderValue <= 20) {
+			// 5-100ms range (super fast)
+			newInterval = 5 + sliderValue * 4.75;
+		} else if (sliderValue <= 50) {
+			// 100-500ms range (fast to moderate)
+			newInterval = 100 + (sliderValue - 20) * (400 / 30);
+		} else {
+			// 500-5000ms range (moderate to very slow)
+			newInterval = 500 + (sliderValue - 50) * (4500 / 50);
+		}
+
+		// Round to whole number
+		newInterval = Math.round(newInterval);
+
+		this.options.interval = newInterval;
+		this.speedValue.textContent = `${newInterval}ms`;
 
 		// Restart the slideshow with new speed if it's currently playing
 		if (this.isPlaying) {
@@ -160,12 +181,16 @@ class PinSlideshow {
 			imageUrl = pin.imageURL;
 		}
 
+		// Determine transition time based on slideshow speed
+		// For very fast slideshows (under 100ms), use a much faster transition
+		const transitionTime = this.options.interval < 100 ? 50 : 200;
+
 		// Update image with transition
 		this.imageElement.classList.add('transitioning');
 		setTimeout(() => {
 			this.imageElement.src = imageUrl;
 			this.imageElement.classList.remove('transitioning');
-		}, 200);
+		}, transitionTime);
 
 		// Update caption with board name
 		this.captionElement.textContent = pin.board?.name || '';
@@ -226,6 +251,9 @@ class PinSlideshow {
 
 		// Load the first slide
 		this.showSlide(0);
+
+		// Set initial speed
+		this.updateSpeed();
 
 		// Start playing automatically
 		this.play();
