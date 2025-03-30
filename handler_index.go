@@ -77,6 +77,11 @@ func HandleTestMode(c *fiber.Ctx) error {
 		"Authenticated": true, // Pretend we're authenticated
 		"Pins":          mockPins,
 		"Boards":        mockBoards,
+		"User": TemplateUser{
+			Name:    "Test User",
+			IconURL: "https://via.placeholder.com/150",
+			URL:     "#",
+		},
 		"UrlQuery": TemplateUrlQuery{
 			Boards:          []string{"board1", "board2", "board3"},
 			Max:             100,
