@@ -25,13 +25,17 @@
 }
 
 .pin-slide-image {
-	width: 100%;
-	height: 100%;
+	/* Fixed dimensions */
+	width: 80vh;
+	height: 80vh;
+	/* Maintain aspect ratio */
 	object-fit: contain;
+	/* Styling */
 	border-radius: 8px;
 	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-	max-width: 80vh;
-	max-height: 80vh;
+	/* Show boundaries */
+	background-color: rgba(0, 0, 0, 0.3);
+	/* Center the image */
 	display: block;
 	margin: 0 auto;
 }
@@ -107,8 +111,11 @@
 }
 
 .pin-slideshow.fullscreen .pin-slide-image {
-	max-width: 90vh;
-	max-height: 90vh;
+	width: 90vh;
+	height: 90vh;
+	/* Maintain other properties from regular image class */
+	object-fit: contain;
+	background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive styles */
@@ -141,26 +148,22 @@
 }
 
 .pin-slideshow.consistent-size .pin-slide-image {
-	/* Fixed dimensions box that all images must fit within */
+	/* Set fixed dimensions */
 	width: 80vh;
 	height: 80vh;
+	/* Keep aspect ratio but within fixed dimensions */
 	object-fit: contain;
-	background-color: rgba(
-		0,
-		0,
-		0,
-		0.3
-	); /* Subtle background to show image boundaries */
-	max-width: none; /* Override the previous max-width */
-	max-height: none; /* Override the previous max-height */
+	/* Create fixed background to show image boundaries */
+	background-color: rgba(0, 0, 0, 0.3);
+	/* Center the image */
+	display: block;
+	margin: 0 auto;
 }
 
 /* Fullscreen consistent size */
 .pin-slideshow.consistent-size.fullscreen .pin-slide-image {
 	width: 90vh;
 	height: 90vh;
-	max-width: none;
-	max-height: none;
 }
 
 /* Make the fullscreen button stay in the control panel at the bottom */
