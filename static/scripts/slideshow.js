@@ -181,16 +181,8 @@ class PinSlideshow {
 			imageUrl = pin.imageURL;
 		}
 
-		// Determine transition time based on slideshow speed
-		// For very fast slideshows (under 100ms), use a much faster transition
-		const transitionTime = this.options.interval < 100 ? 50 : 200;
-
-		// Update image with transition
-		this.imageElement.classList.add('transitioning');
-		setTimeout(() => {
-			this.imageElement.src = imageUrl;
-			this.imageElement.classList.remove('transitioning');
-		}, transitionTime);
+		// Clean cut - directly update image with no transition
+		this.imageElement.src = imageUrl;
 
 		// Update caption with board name
 		this.captionElement.textContent = pin.board?.name || '';
